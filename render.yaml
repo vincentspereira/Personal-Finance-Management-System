@@ -1,0 +1,42 @@
+services:
+  - type: web
+    name: pfms-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: DATABASE_URL
+        fromDatabase:
+          name: pfms-db
+          property: connectionString
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: ZAI_API_KEY
+        sync: false
+      - key: VISION_PROVIDER
+        value: zai
+      - key: CORS_ORIGIN
+        value: https://pfms.onrender.com
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: UPLOAD_DIR
+        value: /opt/render/project/src/uploads
+      - key: MAX_FILE_SIZE_MB
+        value: 20
+
+  - type: web
+    name: pfms-frontend
+    runtime: docker
+    dockerfilePath: ./frontend/Dockerfile
+    dockerContext: ./frontend
+    envVars: []
+
+databases:
+  - name: pfms-db
+    plan: starter

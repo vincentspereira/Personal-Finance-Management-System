@@ -1,0 +1,88 @@
+{
+  "name": "pfms-backend",
+  "version": "1.0.0",
+  "description": "Personal Finance Management System - Backend API",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "migrate": "ts-node src/models/runMigrations.ts",
+    "seed": "ts-node src/models/runSeeds.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "jest --coverage --forceExit --detectOpenHandles",
+    "test:watch": "jest --watch",
+    "test:unit": "jest __tests__/unit --coverage --forceExit",
+    "test:integration": "jest __tests__/integration --coverage --forceExit",
+    "test:e2e": "jest __tests__/e2e --coverage --forceExit"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "roots": [
+      "<rootDir>/__tests__"
+    ],
+    "testMatch": [
+      "**/*.test.ts"
+    ],
+    "moduleNameMapper": {
+      "^@/(.*)$": "<rootDir>/src/$1"
+    },
+    "collectCoverageFrom": [
+      "src/**/*.ts",
+      "!src/server.ts",
+      "!src/models/runMigrations.ts",
+      "!src/models/runSeeds.ts",
+      "!src/config.ts",
+      "!src/db.ts"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 85,
+        "functions": 85,
+        "lines": 85,
+        "statements": 85
+      }
+    },
+    "coverageDirectory": "coverage"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^8.4.1",
+    "express-validator": "^7.2.1",
+    "helmet": "^8.0.0",
+    "jsonwebtoken": "^9.0.3",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.2",
+    "node-cache": "^5.1.2",
+    "node-cron": "^3.0.3",
+    "pg": "^8.13.1",
+    "sharp": "^0.33.3",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/jest": "^29.5.14",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/morgan": "^1.9.9",
+    "@types/multer": "^1.4.12",
+    "@types/node": "^22.10.0",
+    "@types/node-cron": "^3.0.11",
+    "@types/pg": "^8.11.10",
+    "@types/sharp": "^0.32.0",
+    "@types/supertest": "^6.0.2",
+    "@types/uuid": "^10.0.0",
+    "jest": "^29.7.0",
+    "supertest": "^7.0.0",
+    "ts-jest": "^29.2.5",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.7.2"
+  }
+}
