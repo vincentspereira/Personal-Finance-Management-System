@@ -131,4 +131,35 @@ export const savingsGoalsApi = {
   delete: (id) => api.delete(`/savings-goals/${id}`),
 };
 
+// Currency
+export const currencyApi = {
+  rates: (base) => api.get('/currency/rates', { params: { base } }),
+  convert: (amount, from, to) => api.post('/currency/convert', { amount, from, to }),
+  list: () => api.get('/currency/list'),
+};
+
+// Notifications
+export const notificationsApi = {
+  list: (params) => api.get('/notifications', { params }),
+  markRead: (id) => api.put(`/notifications/${id}/read`),
+  markAllRead: () => api.put('/notifications/read-all'),
+  delete: (id) => api.delete(`/notifications/${id}`),
+};
+
+// Export
+export const exportApi = {
+  transactionsCSV: (params) => {
+    const query = new URLSearchParams(params || {}).toString();
+    return fetch(`/api/export/transactions${query ? '?' + query : ''}`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('pfms_token')}` },
+    }).then(res => res.blob());
+  },
+  reportCSV: (params) => {
+    const query = new URLSearchParams(params || {}).toString();
+    return fetch(`/api/export/report${query ? '?' + query : ''}`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('pfms_token')}` },
+    }).then(res => res.blob());
+  },
+};
+
 export default api;

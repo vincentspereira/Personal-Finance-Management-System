@@ -46,6 +46,12 @@ venv/
 
 # Archives
 .archive/
+backups/
 
 # Claude Code local settings
 .claude/
+
+# Data
+pgdata/
+*.sqlite
+*.sqlite3

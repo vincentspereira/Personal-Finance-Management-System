@@ -17,13 +17,16 @@ vi.mock('../../src/api', () => ({
   accountsApi: {
     list: vi.fn(),
   },
+  exportApi: {
+    transactionsCSV: vi.fn(),
+  },
 }));
 
 vi.mock('react-hot-toast', () => ({
   default: { success: vi.fn(), error: vi.fn() },
 }));
 
-import { transactionsApi, categoriesApi, accountsApi } from '../../src/api';
+import { transactionsApi, categoriesApi, accountsApi, exportApi } from '../../src/api';
 
 const mockLoadData = () => {
   categoriesApi.list.mockResolvedValue({
@@ -171,35 +174,24 @@ describe('Transactions', () => {
     await waitFor(() => expect(screen.queryByText('Add Transaction')).not.toBeInTheDocument());
   });
 
-  it('handles export click', async () => {
+  it('handles export CSV click', async () => {
     mockLoadData();
     URL.createObjectURL = vi.fn(() => 'blob:mock');
     URL.revokeObjectURL = vi.fn();
-    transactionsApi.export.mockResolvedValue(new Blob(['csv'], { type: 'text/csv' }));
+    exportApi.transactionsCSV.mockResolvedValue(new Blob(['csv'], { type: 'text/csv' }));
     renderTransactions();
-    await waitFor(() => expect(screen.getByText('Export')).toBeInTheDocument());
-    fireEvent.click(screen.getByText('Export'));
-    await waitFor(() => expect(transactionsApi.export).toHaveBeenCalled());
-  });
-
-  it('handles export JSON format', async () => {
-    mockLoadData();
-    URL.createObjectURL = vi.fn(() => 'blob:mock');
-    URL.revokeObjectURL = vi.fn();
-    transactionsApi.export.mockResolvedValue({ data: [{ id: '1' }] });
-    renderTransactions();
-    await waitFor(() => expect(screen.getByText('Export')).toBeInTheDocument());
-    fireEvent.click(screen.getByText('Export'));
-    await waitFor(() => expect(transactionsApi.export).toHaveBeenCalled());
+    await waitFor(() => expect(screen.getByText('Export CSV')).toBeInTheDocument());
+    fireEvent.click(screen.getByText('Export CSV'));
+    await waitFor(() => expect(exportApi.transactionsCSV).toHaveBeenCalled());
   });
 
   it('handles export error', async () => {
     mockLoadData();
-    transactionsApi.export.mockRejectedValue(new Error('Export failed'));
+    exportApi.transactionsCSV.mockRejectedValue(new Error('Export failed'));
     renderTransactions();
-    await waitFor(() => expect(screen.getByText('Export')).toBeInTheDocument());
-    fireEvent.click(screen.getByText('Export'));
-    await waitFor(() => expect(transactionsApi.export).toHaveBeenCalled());
+    await waitFor(() => expect(screen.getByText('Export CSV')).toBeInTheDocument());
+    fireEvent.click(screen.getByText('Export CSV'));
+    await waitFor(() => expect(exportApi.transactionsCSV).toHaveBeenCalled());
     const toast = await import('react-hot-toast');
     expect(toast.default.error).toHaveBeenCalled();
   });

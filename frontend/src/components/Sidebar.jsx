@@ -1,15 +1,17 @@
 import { NavLink, useNavigate } from 'react-router-dom';
-import { FaChartBar, FaExchangeAlt, FaCamera, FaChartPie, FaFileAlt, FaWallet, FaCog, FaChevronLeft, FaChevronRight, FaSignOutAlt, FaTimes, FaSun, FaMoon } from 'react-icons/fa';
+import { FaChartBar, FaExchangeAlt, FaCamera, FaChartPie, FaFileAlt, FaWallet, FaCog, FaChevronLeft, FaChevronRight, FaSignOutAlt, FaTimes, FaSun, FaMoon, FaUniversity, FaBullseye } from 'react-icons/fa';
 import { useAuth } from '../hooks/useAuth';
 import { useTheme } from '../hooks/useTheme';
 
 const nav = [
   { to: '/dashboard', icon: FaChartBar, label: 'Dashboard' },
   { to: '/transactions', icon: FaExchangeAlt, label: 'Transactions' },
+  { to: '/accounts', icon: FaUniversity, label: 'Accounts' },
   { to: '/scan', icon: FaCamera, label: 'Scan Invoices' },
   { to: '/analytics', icon: FaChartPie, label: 'Analytics' },
   { to: '/reports', icon: FaFileAlt, label: 'Reports' },
   { to: '/budgets', icon: FaWallet, label: 'Budgets' },
+  { to: '/savings-goals', icon: FaBullseye, label: 'Savings Goals' },
   { to: '/settings', icon: FaCog, label: 'Settings' },
 ];
 

@@ -142,9 +142,102 @@ See `fly.toml` for configuration.
 | POST | `/api/transactions/import/preview` | Upload CSV/QIF for preview |
 | POST | `/api/transactions/import/confirm` | Confirm import |
 
-### Accounts, Categories, Scans, Budgets, Analytics, Reports
+### Accounts
 
-Full API docs available in the OpenAPI spec.
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/accounts` | List accounts |
+| POST | `/api/accounts` | Create account |
+| PUT | `/api/accounts/:id` | Update account |
+| DELETE | `/api/accounts/:id` | Archive account |
+| GET | `/api/accounts/:id/balance` | Get account balance |
+
+### Categories
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/categories` | List categories |
+| POST | `/api/categories` | Create category |
+| PUT | `/api/categories/:id` | Update category |
+| DELETE | `/api/categories/:id` | Delete category (with optional reassignment) |
+
+### Scans (AI Receipt Scanning)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/scans/upload` | Upload receipt images |
+| GET | `/api/scans/:id/status` | Check processing status |
+| GET | `/api/scans/:id/results` | Get extraction results |
+| POST | `/api/scans/:id/confirm` | Confirm and create transactions from extracted data |
+| POST | `/api/scans/:id/retry` | Retry a failed scan |
+| GET | `/api/scans` | List scan history |
+
+### Analytics
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/analytics/summary` | Income/expense summary with period comparison |
+| GET | `/api/analytics/by-category` | Spending breakdown by category |
+| GET | `/api/analytics/trends` | Monthly income vs expense trends |
+| GET | `/api/analytics/top-merchants` | Top merchants by spending |
+| GET | `/api/analytics/cashflow` | Daily cashflow data |
+| GET | `/api/analytics/budget-vs-actual` | Budget vs actual spending |
+| GET | `/api/analytics/recurring` | Detected recurring transaction patterns |
+| GET | `/api/analytics/net-worth` | Net worth calculation |
+| GET | `/api/analytics/budget-alerts` | Budget threshold alerts |
+
+### Reports
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/reports/monthly` | Monthly financial report |
+| GET | `/api/reports/annual` | Annual financial report |
+| POST | `/api/reports/custom` | Custom date range report |
+| GET | `/api/reports/net-worth` | Net worth over time |
+
+### Budgets
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/budgets` | List budgets with actual spending |
+| POST | `/api/budgets` | Create budget |
+| PUT | `/api/budgets/:id` | Update budget |
+| DELETE | `/api/budgets/:id` | Delete budget |
+
+### Recurring Patterns
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/recurring` | List detected recurring patterns |
+| GET | `/api/recurring/upcoming` | Upcoming bills (next N days) |
+| POST | `/api/recurring/refresh` | Re-detect patterns from transactions |
+| PUT | `/api/recurring/:id/toggle` | Enable/disable a pattern |
+
+### Savings Goals
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/savings-goals` | List goals |
+| POST | `/api/savings-goals` | Create goal |
+| PUT | `/api/savings-goals/:id` | Update goal (add contributions) |
+| DELETE | `/api/savings-goals/:id` | Delete goal |
+
+## Running Tests
+
+```bash
+# Backend
+cd backend
+npm test                  # All tests with coverage (85% threshold)
+npm run test:unit         # Unit tests only
+npm run test:integration  # Integration tests only
+npm run test:e2e          # End-to-end tests only
+
+# Frontend
+cd frontend
+npm test                  # Run tests with coverage
+npm run test:watch        # Watch mode
+npm run test:ui           # Vitest UI
+```
 
 ## Environment Variables
 

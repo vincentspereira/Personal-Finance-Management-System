@@ -132,22 +132,17 @@ export async function runMigrations() {
     )
   `);
 
-  // Create indexes
+  // Create indexes (non-user columns only — user_id indexes added after ALTER TABLE)
   const indexes = [
     'CREATE INDEX IF NOT EXISTS idx_transactions_date ON transactions(transaction_date)',
     'CREATE INDEX IF NOT EXISTS idx_transactions_category ON transactions(category_id)',
     'CREATE INDEX IF NOT EXISTS idx_transactions_account ON transactions(account_id)',
     'CREATE INDEX IF NOT EXISTS idx_transactions_type ON transactions(type)',
     'CREATE INDEX IF NOT EXISTS idx_transactions_scan ON transactions(scan_id)',
-    'CREATE INDEX IF NOT EXISTS idx_transactions_user ON transactions(user_id)',
     'CREATE INDEX IF NOT EXISTS idx_scan_documents_scan ON scan_documents(scan_id)',
     'CREATE INDEX IF NOT EXISTS idx_budgets_category ON budgets(category_id)',
-    'CREATE INDEX IF NOT EXISTS idx_budgets_user ON budgets(user_id)',
     'CREATE INDEX IF NOT EXISTS idx_categories_parent ON categories(parent_id)',
     'CREATE INDEX IF NOT EXISTS idx_scans_status ON scans(status)',
-    'CREATE INDEX IF NOT EXISTS idx_scans_user ON scans(user_id)',
-    'CREATE INDEX IF NOT EXISTS idx_accounts_user ON accounts(user_id)',
-    'CREATE INDEX IF NOT EXISTS idx_categories_user ON categories(user_id)',
   ];
 
   for (const idx of indexes) {
@@ -167,7 +162,16 @@ export async function runMigrations() {
     await query(`ALTER TABLE ${table} ADD COLUMN IF NOT EXISTS ${col} ${type}`);
   }
 
-  for (const idx of indexes) {
+  // Create user_id indexes (after columns exist)
+  const userIndexes = [
+    'CREATE INDEX IF NOT EXISTS idx_transactions_user ON transactions(user_id)',
+    'CREATE INDEX IF NOT EXISTS idx_budgets_user ON budgets(user_id)',
+    'CREATE INDEX IF NOT EXISTS idx_scans_user ON scans(user_id)',
+    'CREATE INDEX IF NOT EXISTS idx_accounts_user ON accounts(user_id)',
+    'CREATE INDEX IF NOT EXISTS idx_categories_user ON categories(user_id)',
+  ];
+
+  for (const idx of userIndexes) {
     await query(idx);
   }
 
@@ -216,6 +220,21 @@ export async function runMigrations() {
   // Add import_hash column for duplicate detection
   await query(`ALTER TABLE transactions ADD COLUMN IF NOT EXISTS import_hash VARCHAR(64)`);
   await query('CREATE INDEX IF NOT EXISTS idx_transactions_import_hash ON transactions(import_hash) WHERE import_hash IS NOT NULL');
+
+  // Notifications table
+  await query(`
+    CREATE TABLE IF NOT EXISTS notifications (
+      id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+      user_id UUID REFERENCES users(id) ON DELETE CASCADE NOT NULL,
+      type VARCHAR(30) NOT NULL CHECK (type IN ('budget_warning', 'budget_exceeded', 'goal_completed', 'recurring_due', 'info')),
+      title VARCHAR(255) NOT NULL,
+      message TEXT,
+      data JSONB DEFAULT '{}',
+      is_read BOOLEAN DEFAULT FALSE,
+      created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    )
+  `);
+  await query('CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id, is_read, created_at DESC)');
 
   console.log('Migrations completed.');
 }

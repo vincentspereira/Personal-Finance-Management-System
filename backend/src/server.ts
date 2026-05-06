@@ -9,6 +9,7 @@ import { errorHandler } from './middleware/errorHandler';
 import { authMiddleware } from './middleware/auth';
 import { runMigrations } from './models/migrations';
 import { runSeeds } from './models/seeds';
+import { startScheduler } from './services/schedulerService';
 
 // Routes
 import authRoutes from './routes/auth';
@@ -22,6 +23,9 @@ import budgetRoutes from './routes/budgets';
 import importRoutes from './routes/import';
 import recurringRoutes from './routes/recurring';
 import savingsGoalRoutes from './routes/savingsGoals';
+import currencyRoutes from './routes/currency';
+import notificationRoutes from './routes/notifications';
+import exportRoutes from './routes/export';
 
 if (!fs.existsSync(config.uploadDir)) {
   fs.mkdirSync(config.uploadDir, { recursive: true });
@@ -76,6 +80,9 @@ app.use('/api/budgets', authMiddleware, budgetRoutes);
 app.use('/api/transactions/import', authMiddleware, importRoutes);
 app.use('/api/recurring', authMiddleware, recurringRoutes);
 app.use('/api/savings-goals', authMiddleware, savingsGoalRoutes);
+app.use('/api/currency', authMiddleware, currencyRoutes);
+app.use('/api/notifications', authMiddleware, notificationRoutes);
+app.use('/api/export', authMiddleware, exportRoutes);
 
 // Error handler
 app.use(errorHandler);
@@ -86,6 +93,11 @@ async function start() {
     // Run migrations and seeds on startup
     await runMigrations();
     await runSeeds();
+
+    // Start scheduled jobs
+    if (config.nodeEnv === 'production') {
+      startScheduler();
+    }
 
     app.listen(config.port, () => {
       console.log(`PFMS API running on port ${config.port} (${config.nodeEnv})`);

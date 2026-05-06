@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { transactionsApi, categoriesApi, accountsApi } from '../api';
+import { transactionsApi, categoriesApi, accountsApi, exportApi } from '../api';
 import { DataTable, Modal, Badge, PageHeader, LoadingSpinner } from '../components/Common';
-import { FaPlus, FaDownload, FaSearch, FaFilter, FaUpload, FaFileAlt, FaCheck, FaTimes, FaTrash } from 'react-icons/fa';
+import { FaPlus, FaDownload, FaSearch, FaFilter, FaUpload, FaFileAlt, FaFileCsv, FaCheck, FaTimes, FaTrash } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 
 const emptyForm = {
@@ -119,31 +119,21 @@ export default function Transactions() {
     setShowAddModal(true);
   };
 
-  const handleExport = async (format) => {
+  const handleExport = async () => {
     try {
-      const params = { format, ...filters };
-      Object.keys(params).forEach(k => { if (!params[k]) delete params[k]; });
-      if (format === 'csv') {
-        const res = await transactionsApi.export(params);
-        const url = URL.createObjectURL(res);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'transactions.csv';
-        a.click();
-        URL.revokeObjectURL(url);
-      } else {
-        const res = await transactionsApi.export(params);
-        const blob = new Blob([JSON.stringify(res.data, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'transactions.json';
-        a.click();
-        URL.revokeObjectURL(url);
-      }
-      toast.success('Export complete');
+      const params = {};
+      if (filters.startDate) params.startDate = filters.startDate;
+      if (filters.endDate) params.endDate = filters.endDate;
+      const blob = await exportApi.transactionsCSV(params);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'transactions.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success('CSV exported');
     } catch (err) {
-      toast.error(err.message);
+      toast.error('Export failed');
     }
   };
 
@@ -245,8 +235,8 @@ export default function Transactions() {
             <button className="btn-secondary flex items-center gap-2" onClick={() => setShowFilters(!showFilters)}>
               <FaFilter /> Filters
             </button>
-            <button className="btn-secondary flex items-center gap-2" onClick={() => handleExport('csv')}>
-              <FaDownload /> Export
+            <button className="btn-secondary flex items-center gap-2" onClick={handleExport}>
+              <FaFileCsv /> Export CSV
             </button>
             <button className="btn-secondary flex items-center gap-2" onClick={() => setShowImportModal(true)}>
               <FaUpload /> Import

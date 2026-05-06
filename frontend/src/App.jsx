@@ -5,10 +5,12 @@ import { ThemeProvider } from './hooks/useTheme';
 import Sidebar from './components/Sidebar';
 import Dashboard from './pages/Dashboard';
 import Transactions from './pages/Transactions';
+import Accounts from './pages/Accounts';
 import ScanPage from './pages/Scan';
 import Analytics from './pages/Analytics';
 import Reports from './pages/Reports';
 import Budgets from './pages/Budgets';
+import SavingsGoals from './pages/SavingsGoals';
 import Settings from './pages/Settings';
 import Login from './pages/Login';
 import { LoadingSpinner } from './components/Common';
@@ -37,10 +39,12 @@ function ProtectedLayout() {
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/transactions" element={<Transactions />} />
+          <Route path="/accounts" element={<Accounts />} />
           <Route path="/scan" element={<ScanPage />} />
           <Route path="/analytics" element={<Analytics />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/budgets" element={<Budgets />} />
+          <Route path="/savings-goals" element={<SavingsGoals />} />
           <Route path="/settings" element={<Settings />} />
         </Routes>
       </main>

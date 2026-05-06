@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { reportsApi, analyticsApi } from '../api';
+import { reportsApi, analyticsApi, exportApi } from '../api';
 import { PageHeader, LoadingSpinner, KPICard } from '../components/Common';
 import { IncomeExpenseBarChart } from '../components/Charts';
-import { FaFilePdf, FaCalendar } from 'react-icons/fa';
+import { FaFilePdf, FaFileCsv, FaCalendar } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 
 export default function Reports() {
@@ -57,6 +57,25 @@ export default function Reports() {
 
   const handlePrint = () => window.print();
 
+  const handleExportCSV = async () => {
+    try {
+      const blob = await exportApi.reportCSV({
+        type: tab === 'networth' ? 'monthly' : tab,
+        year,
+        month,
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${tab}_report_${year}${tab === 'monthly' ? `_m${month}` : ''}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success('CSV exported');
+    } catch (err) {
+      toast.error('Export failed');
+    }
+  };
+
   const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
   return (
@@ -64,9 +83,14 @@ export default function Reports() {
       <PageHeader
         title="Reports"
         actions={
-          <button className="btn-secondary flex items-center gap-2" onClick={handlePrint}>
-            <FaFilePdf /> Export PDF
-          </button>
+          <div className="flex gap-2">
+            <button className="btn-secondary flex items-center gap-2" onClick={handleExportCSV}>
+              <FaFileCsv /> Export CSV
+            </button>
+            <button className="btn-secondary flex items-center gap-2" onClick={handlePrint}>
+              <FaFilePdf /> Export PDF
+            </button>
+          </div>
         }
       />
 
